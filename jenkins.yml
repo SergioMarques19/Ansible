@@ -1,0 +1,40 @@
+- name: Instalacao Jenkins
+  hosts: all
+
+  tasks: 
+  # task 1
+  - name: Instalacao pre-requisito JAVA
+    package: name=java state=latest
+ 
+  # task 2
+  - name: instalacao wget
+    package: name=wget state=latest
+
+  # task 3
+  - name: atualiza repo jenkins
+    get_url: url=http://pkg.jenkins-ci.org/redhat/jenkins.repo dest=/etc/yum.repos.d/jenkins.repo 
+
+  # task 4
+  - name: baixar key
+    rpm_key: 
+     state: present
+     key: http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
+
+  # task 5
+  - name: instalacao jenkins
+    package: name=jenkins state=latest
+
+  # task 6
+  - name: liberacao firewall
+    firewalld:
+      port: 8080/tcp
+      permanent: true
+      state: enabled
+
+  # task 7
+  - name: reiniciar firewall
+    service: name=firewalld state=restarted
+
+  # task 8
+  - name: start jenkins
+    service: name=jenkins state=restarted
